@@ -20,3 +20,8 @@ TEST_CASE("Test get_letter_grade_using_switch")
     REQUIRE(get_letter_grade_using_switch(65) == "D");
     REQUIRE(get_letter_grade_using_switch(50) == "F");
 }
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> a74645022bfeb5765a92ed60326732730e9ed5e8
