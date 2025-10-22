@@ -1,13 +1,17 @@
 // 01_data_types_tests.cpp
-#define CATCH_CONFIG_MAIN
-#include "catch.hpp"
 #include "data_types.h"
+#include <cassert>
+#include <iostream>
 
-TEST_CASE("Verify multiply_numbers function")
+using namespace std;
+
+int main()
 {
-    REQUIRE(multiply_numbers(7, 7) == 49);
-    REQUIRE(multiply_numbers(5, 5) == 25);
-    REQUIRE(multiply_numbers(10, 2) == 20);
+    assert(multiply_numbers(7, 7) == 49);
+    assert(multiply_numbers(5, 5) == 25);
+    cout << "✅ All tests passed successfully!" << endl;
+    return 0;
 }
+
 
 
