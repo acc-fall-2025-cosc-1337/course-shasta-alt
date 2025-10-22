@@ -6,14 +6,17 @@ using namespace std;
 
 int main()
 {
-    int result;
+    double num1 = 7;
+    double num2 = 7;
+    double result = multiply_numbers(num1, num2);
+    cout << num1 << " x " << num2 << " = " << result << endl;
 
-    result = multiply_numbers(7, 7);
-    cout << "7 x 7 = " << result << endl;
-
-    result = multiply_numbers(5, 5);
-    cout << "5 x 5 = " << result << endl;
+    num1 = 5;
+    num2 = 5;
+    result = multiply_numbers(num1, num2);
+    cout << num1 << " x " << num2 << " = " << result << endl;
 
     return 0;
 }
+
 
