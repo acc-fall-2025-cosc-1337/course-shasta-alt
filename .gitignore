@@ -47,3 +47,6 @@ lib*
 tic_game
 tic_test
 build/
+tic_game
+tic_test
+build/
