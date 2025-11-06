@@ -1,139 +1,125 @@
-#define CATCH_CONFIG_MAIN
-#include "catch.hpp"
+#include <cassert>
+#include <iostream>
 #include "tic_tac_toe.h"
 
-TEST_CASE("Test first player set to X")
+// small helper to show progress then assert
+static void check(bool cond, const char* msg)
 {
-    TicTacToe game;
-    game.start_game("X");
-    REQUIRE(game.get_player() == "X");
-}
-
-TEST_CASE("Test first player set to O")
-{
-    TicTacToe game;
-    game.start_game("O");
-    REQUIRE(game.get_player() == "O");
-}
-
-TEST_CASE("Test game over tie with 9 moves winner C")
-{
-    TicTacToe game;
-    game.start_game("X");
-
-    // A common tie sequence
-    int moves[] = {1,2,3,5,4,6,8,7,9};
-    for (int i = 0; i < 9; ++i)
+    if (!cond)
     {
-        game.mark_board(moves[i]);
-        if (i < 8) REQUIRE(game.game_over() == false);
+        std::cerr << "[FAIL] " << msg << "\n";
+        std::abort();
     }
-    REQUIRE(game.game_over() == true);
-    REQUIRE(game.get_winner() == "C");
 }
 
-TEST_CASE("Test win by first column")
+int main()
 {
-    TicTacToe game;
-    game.start_game("X");
+    // First player X
+    {
+        TicTacToe g; g.start_game("X");
+        check(g.get_player() == "X", "first player should be X");
+    }
+    // First player O
+    {
+        TicTacToe g; g.start_game("O");
+        check(g.get_player() == "O", "first player should be O");
+    }
+    // Win by first column 1,4,7
+    {
+        TicTacToe g; g.start_game("X");
+        g.mark_board(1); check(!g.game_over(), "after 1 move not over");
+        g.mark_board(2); check(!g.game_over(), "after 2 moves not over");
+        g.mark_board(4); check(!g.game_over(), "after 3 moves not over");
+        g.mark_board(3); check(!g.game_over(), "after 4 moves not over");
+        g.mark_board(7); check(g.game_over(), "should be over");
+        check(g.get_winner() == "X", "winner should be X");
+    }
+    // Win by second column 2,5,8
+    {
+        TicTacToe g; g.start_game("X");
+        g.mark_board(2); check(!g.game_over(), "not over");
+        g.mark_board(1); check(!g.game_over(), "not over");
+        g.mark_board(5); check(!g.game_over(), "not over");
+        g.mark_board(3); check(!g.game_over(), "not over");
+        g.mark_board(8); check(g.game_over(), "over");
+        check(g.get_winner() == "X", "winner X");
+    }
+    // Win by third column 3,6,9
+    {
+        TicTacToe g; g.start_game("X");
+        g.mark_board(3); check(!g.game_over(), "not over");
+        g.mark_board(1); check(!g.game_over(), "not over");
+        g.mark_board(6); check(!g.game_over(), "not over");
+        g.mark_board(2); check(!g.game_over(), "not over");
+        g.mark_board(9); check(g.game_over(), "over");
+        check(g.get_winner() == "X", "winner X");
+    }
+    // Win by first row 1,2,3
+    {
+        TicTacToe g; g.start_game("X");
+        g.mark_board(1); check(!g.game_over(), "not over");
+        g.mark_board(4); check(!g.game_over(), "not over");
+        g.mark_board(2); check(!g.game_over(), "not over");
+        g.mark_board(5); check(!g.game_over(), "not over");
+        g.mark_board(3); check(g.game_over(), "over");
+        check(g.get_winner() == "X", "winner X");
+    }
+    // Win by second row 4,5,6
+    {
+        TicTacToe g; g.start_game("X");
+        g.mark_board(4); check(!g.game_over(), "not over");
+        g.mark_board(1); check(!g.game_over(), "not over");
+        g.mark_board(5); check(!g.game_over(), "not over");
+        g.mark_board(2); check(!g.game_over(), "not over");
+        g.mark_board(6); check(g.game_over(), "over");
+        check(g.get_winner() == "X", "winner X");
+    }
+    // Win by third row 7,8,9
+    {
+        TicTacToe g; g.start_game("X");
+        g.mark_board(7); check(!g.game_over(), "not over");
+        g.mark_board(1); check(!g.game_over(), "not over");
+        g.mark_board(8); check(!g.game_over(), "not over");
+        g.mark_board(2); check(!g.game_over(), "not over");
+        g.mark_board(9); check(g.game_over(), "over");
+        check(g.get_winner() == "X", "winner X");
+    }
+    // Win diagonal 1,5,9
+    {
+        TicTacToe g; g.start_game("X");
+        g.mark_board(1); check(!g.game_over(), "not over");
+        g.mark_board(2); check(!g.game_over(), "not over");
+        g.mark_board(5); check(!g.game_over(), "not over");
+        g.mark_board(3); check(!g.game_over(), "not over");
+        g.mark_board(9); check(g.game_over(), "over");
+        check(g.get_winner() == "X", "winner X");
+    }
+    // Win diagonal 7,5,3
+    {
+        TicTacToe g; g.start_game("X");
+        g.mark_board(7); check(!g.game_over(), "not over");
+        g.mark_board(1); check(!g.game_over(), "not over");
+        g.mark_board(5); check(!g.game_over(), "not over");
+        g.mark_board(2); check(!g.game_over(), "not over");
+        g.mark_board(3); check(g.game_over(), "over");
+        check(g.get_winner() == "X", "winner X");
+    }
+    // Tie C
+    {
+        TicTacToe g; g.start_game("X");
+        int seq[] = {1,2,3,5,4,6,8,7,9}; // full board no 3-in-a-row
+        for (int i = 0; i < 9; ++i)
+        {
+            g.mark_board(seq[i]);
+            if (i < 8) check(!g.game_over(), "not over yet");
+        }
+        check(g.game_over(), "tie ends game");
+        check(g.get_winner() == "C", "winner C");
+    }
 
-    game.mark_board(1); REQUIRE_FALSE(game.game_over());
-    game.mark_board(2); REQUIRE_FALSE(game.game_over());
-    game.mark_board(4); REQUIRE_FALSE(game.game_over());
-    game.mark_board(5); REQUIRE_FALSE(game.game_over());
-    game.mark_board(7); REQUIRE(game.game_over());
-    REQUIRE(game.get_winner() == "X");
+    std::cout << "All tests passed.\n";
+    return 0;
 }
 
-TEST_CASE("Test win by second column")
-{
-    TicTacToe game;
-    game.start_game("X");
-
-    game.mark_board(2); REQUIRE_FALSE(game.game_over());
-    game.mark_board(1); REQUIRE_FALSE(game.game_over());
-    game.mark_board(5); REQUIRE_FALSE(game.game_over());
-    game.mark_board(3); REQUIRE_FALSE(game.game_over());
-    game.mark_board(8); REQUIRE(game.game_over());
-    REQUIRE(game.get_winner() == "X");
-}
-
-TEST_CASE("Test win by third column")
-{
-    TicTacToe game;
-    game.start_game("X");
-
-    game.mark_board(3); REQUIRE_FALSE(game.game_over());
-    game.mark_board(1); REQUIRE_FALSE(game.game_over());
-    game.mark_board(6); REQUIRE_FALSE(game.game_over());
-    game.mark_board(2); REQUIRE_FALSE(game.game_over());
-    game.mark_board(9); REQUIRE(game.game_over());
-    REQUIRE(game.get_winner() == "X");
-}
-
-TEST_CASE("Test win by first row")
-{
-    TicTacToe game;
-    game.start_game("X");
-
-    game.mark_board(1); REQUIRE_FALSE(game.game_over());
-    game.mark_board(4); REQUIRE_FALSE(game.game_over());
-    game.mark_board(2); REQUIRE_FALSE(game.game_over());
-    game.mark_board(5); REQUIRE_FALSE(game.game_over());
-    game.mark_board(3); REQUIRE(game.game_over());
-    REQUIRE(game.get_winner() == "X");
-}
-
-TEST_CASE("Test win by second row")
-{
-    TicTacToe game;
-    game.start_game("X");
-
-    game.mark_board(4); REQUIRE_FALSE(game.game_over());
-    game.mark_board(1); REQUIRE_FALSE(game.game_over());
-    game.mark_board(5); REQUIRE_FALSE(game.game_over());
-    game.mark_board(2); REQUIRE_FALSE(game.game_over());
-    game.mark_board(6); REQUIRE(game.game_over());
-    REQUIRE(game.get_winner() == "X");
-}
-
-TEST_CASE("Test win by third row")
-{
-    TicTacToe game;
-    game.start_game("X");
-
-    game.mark_board(7); REQUIRE_FALSE(game.game_over());
-    game.mark_board(1); REQUIRE_FALSE(game.game_over());
-    game.mark_board(8); REQUIRE_FALSE(game.game_over());
-    game.mark_board(2); REQUIRE_FALSE(game.game_over());
-    game.mark_board(9); REQUIRE(game.game_over());
-    REQUIRE(game.get_winner() == "X");
-}
-
-TEST_CASE("Test win diagonally from top left")
-{
-    TicTacToe game;
-    game.start_game("X");
-
-    game.mark_board(1); REQUIRE_FALSE(game.game_over());
-    game.mark_board(2); REQUIRE_FALSE(game.game_over());
-    game.mark_board(5); REQUIRE_FALSE(game.game_over());
-    game.mark_board(3); REQUIRE_FALSE(game.game_over());
-    game.mark_board(9); REQUIRE(game.game_over());
-    REQUIRE(game.get_winner() == "X");
-}
-
-TEST_CASE("Test win diagonally from bottom left")
-{
-    TicTacToe game;
-    game.start_game("X");
-
-    game.mark_board(7); REQUIRE_FALSE(game.game_over());
-    game.mark_board(1); REQUIRE_FALSE(game.game_over());
-    game.mark_board(5); REQUIRE_FALSE(game.game_over());
-    game.mark_board(2); REQUIRE_FALSE(game.game_over());
-    game.mark_board(3); REQUIRE(game.game_over());
-    REQUIRE(game.get_winner() == "X");
-}
 
 
