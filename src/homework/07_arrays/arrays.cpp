@@ -1,33 +1,29 @@
 #include "tic_tac_toe.h"
 #include <iostream>
 #include <stdexcept>
-using std::string;
-using std::vector;
 
-void TicTacToe::start_game(string first_player)
+void TicTacToe::start_game(std::string first_player)
 {
     if (first_player != "X" && first_player != "O")
     {
-        throw std::invalid_argument("first_player must be X or O");
+        throw std::invalid_argument("first_player must be 'X' or 'O'");
     }
     player = first_player;
-    clear_board();
     winner.clear();
+    clear_board();
 }
 
 void TicTacToe::mark_board(int position)
 {
-    // position is 1-9
-    int idx = position - 1;
-    if (idx < 0 || idx >= static_cast<int>(pegs.size()))
+    if (position < 1 || position > 9)
     {
-        throw std::out_of_range("position must be 1-9");
+        throw std::out_of_range("position must be 1..9");
     }
+    std::size_t idx = static_cast<std::size_t>(position - 1);
     if (pegs[idx] != " ")
     {
         throw std::logic_error("position already taken");
     }
-
     pegs[idx] = player;
     set_next_player();
 }
@@ -39,99 +35,87 @@ bool TicTacToe::game_over()
         set_winner();
         return true;
     }
-
     if (check_board_full())
     {
-        winner = "C"; // tie
+        winner = "C";
         return true;
     }
-
     return false;
 }
 
-string TicTacToe::get_player() const
+std::string TicTacToe::get_player() const
 {
     return player;
 }
 
 void TicTacToe::display_board() const
 {
-    // Simple 3x3 print
-    for (int i = 0; i < 9; i += 3)
+    for (int r = 0; r < 3; ++r)
     {
+        int i = r * 3;
         std::cout << " " << pegs[i] << " | " << pegs[i + 1] << " | " << pegs[i + 2] << "\n";
-        if (i < 6) std::cout << "---+---+---\n";
+        if (r < 2) std::cout << "---+---+---\n";
     }
 }
 
-string TicTacToe::get_winner() const
+std::string TicTacToe::get_winner() const
 {
     return winner;
 }
 
-// private helpers
-
-bool TicTacToe::check_column_win()
+bool TicTacToe::check_column_win() const
 {
-    // columns: (0,3,6), (1,4,7), (2,5,8)
+    // columns: 0,3,6  1,4,7  2,5,8
     for (int c = 0; c < 3; ++c)
     {
-        const string& a = pegs[c];
-        const string& b = pegs[c + 3];
-        const string& d = pegs[c + 6];
+        const std::string& a = pegs[c];
+        const std::string& b = pegs[c + 3];
+        const std::string& d = pegs[c + 6];
         if (a != " " && a == b && b == d) return true;
     }
     return false;
 }
 
-bool TicTacToe::check_row_win()
+bool TicTacToe::check_row_win() const
 {
-    // rows: (0,1,2), (3,4,5), (6,7,8)
-    for (int r = 0; r < 9; r += 3)
+    // rows: 0,1,2  3,4,5  6,7,8
+    for (int r = 0; r < 3; ++r)
     {
-        const string& a = pegs[r];
-        const string& b = pegs[r + 1];
-        const string& d = pegs[r + 2];
+        int i = r * 3;
+        const std::string& a = pegs[i];
+        const std::string& b = pegs[i + 1];
+        const std::string& d = pegs[i + 2];
         if (a != " " && a == b && b == d) return true;
     }
     return false;
 }
 
-bool TicTacToe::check_diagonal_win()
+bool TicTacToe::check_diagonal_win() const
 {
-    // diagonals: (0,4,8) and (6,4,2)
-    if (pegs[0] != " " && pegs[0] == pegs[4] && pegs[4] == pegs[8]) return true;
-    if (pegs[6] != " " && pegs[6] == pegs[4] && pegs[4] == pegs[2]) return true;
-    return false;
+    bool d1 = pegs[0] != " " && pegs[0] == pegs[4] && pegs[4] == pegs[8];
+    bool d2 = pegs[6] != " " && pegs[6] == pegs[4] && pegs[4] == pegs[2];
+    return d1 || d2;
 }
 
-bool TicTacToe::check_board_full()
+bool TicTacToe::check_board_full() const
 {
-    for (const auto& p : pegs)
-    {
-        if (p == " ") return false;
-    }
+    for (const auto& s : pegs) if (s == " ") return false;
     return true;
 }
 
 void TicTacToe::set_next_player()
 {
-    if (player == "X")
-        player = "O";
-    else
-        player = "X";
+    player = (player == "X") ? "O" : "X";
 }
 
 void TicTacToe::clear_board()
 {
-    for (auto& p : pegs) p = " ";
+    for (auto& s : pegs) s = " ";
 }
 
 void TicTacToe::set_winner()
 {
-    // winner is the player who played last which is the opposite of current player
-    if (player == "X")
-        winner = "O";
-    else
-        winner = "X";
+    // mark_board already toggled player, so the opposite is the winner
+    winner = (player == "X") ? "O" : "X";
 }
+
