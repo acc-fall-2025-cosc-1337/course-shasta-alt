@@ -1,72 +1,81 @@
 #include "tic_tac_toe.h"
 #include <iostream>
 #include <limits>
-#include <cctype>
+#include <string>
+
+static int read_position()
+{
+    int pos{};
+    while (true)
+    {
+        std::cout << "Enter position 1..9: ";
+        if (std::cin >> pos && pos >= 1 && pos <= 9) return pos;
+        std::cout << "Invalid position. Try again.\n";
+        std::cin.clear();
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    }
+}
+
+static std::string read_first_player()
+{
+    std::string p;
+    while (true)
+    {
+        std::cout << "Who starts the game, X or O? ";
+        if (std::cin >> p)
+        {
+            if (p == "X" || p == "O") return p;
+        }
+        std::cout << "Please enter X or O.\n";
+    }
+}
 
 int main()
 {
-    TicTacToe game;
-    char again = 'y';
+    std::cout << "TicTacToe\n";
+    bool play_again = true;
 
-    while (std::tolower(again) == 'y')
+    while (play_again)
     {
-        // choose first player
-        std::string first;
-        while (true)
+        TicTacToe game;
+        try
         {
-            std::cout << "Start game. Choose first player (X or O): ";
-            std::cin >> first;
-            if (first == "X" || first == "O") break;
-            std::cout << "Invalid. Enter X or O.\n";
+            auto first = read_first_player();
+            game.start_game(first);
+        }
+        catch (const std::exception& ex)
+        {
+            std::cout << "Error: " << ex.what() << "\n";
+            continue;
         }
 
-        game.start_game(first);
-
-        // play until game over
         while (!game.game_over())
         {
-            int pos = 0;
-            while (true)
-            {
-                std::cout << "Enter position 1-9: ";
-                if (!(std::cin >> pos))
-                {
-                    std::cin.clear();
-                    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                    std::cout << "Invalid input. Try again.\n";
-                    continue;
-                }
-                if (pos < 1 || pos > 9)
-                {
-                    std::cout << "Position must be 1-9. Try again.\n";
-                    continue;
-                }
-                try
-                {
-                    game.mark_board(pos);
-                    break;
-                }
-                catch (const std::exception& e)
-                {
-                    std::cout << e.what() << " Try another spot.\n";
-                }
-            }
-
             game.display_board();
-            std::cout << "\n";
+            std::cout << "Current player: " << game.get_player() << "\n";
+            try
+            {
+                game.mark_board(read_position());
+            }
+            catch (const std::exception& ex)
+            {
+                std::cout << "Invalid move: " << ex.what() << "\n";
+            }
         }
 
+        std::cout << "\nFinal board:\n";
+        game.display_board();
+
         std::string w = game.get_winner();
-        if (w == "C")
-            std::cout << "Result: Tie game.\n";
-        else
-            std::cout << "Winner: " << w << "\n";
+        if (w == "C") std::cout << "Result: Tie game\n";
+        else std::cout << "Winner: " << w << "\n";
 
         std::cout << "Play again? (y/n): ";
-        std::cin >> again;
-        std::cout << "\n";
+        char ans{};
+        std::cin >> ans;
+        play_again = (ans == 'y' || ans == 'Y');
     }
-
-    std::cout << "Goodbye.\n";
+    std::cout << "Goodbye\n";
     return 0;
 }
+
