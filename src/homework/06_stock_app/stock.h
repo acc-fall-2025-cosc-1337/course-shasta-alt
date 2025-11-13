@@ -1,19 +1,17 @@
 #ifndef STOCK_H
 #define STOCK_H
-
-#include <string>
-
 #include "investment.h"
+#include <string>
 
 class Stock : public Investment {
 public:
-    Stock(const std::string& symbol, double price)
-        : Investment(symbol, price) {}
+    Stock(std::string symbol, int shares, double price);
+    double market_value() const override;
+    std::string description() const override;
 
-    std::string getSymbol() const { return getName(); }
-    double getPrice() const { return Investment::getPrice(); }
-
-    void setPrice(double newPrice) { price_ = newPrice; }
+private:
+    std::string symbol_;
+    int shares_{0};
+    double price_{0.0};
 };
-
-#endif // STOCK_H
+#endif
